@@ -4,6 +4,7 @@ spring:
       uri: ${MONGODB_URI}
       database: sample_mflix
 voyage:
+  api-key: ${VOYAGE_API_KEY}
   base-url: https://api.voyageai.com/v1
   model: voyage-3-large
   output-dimension: 2048
