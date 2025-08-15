@@ -1,0 +1,13 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: sample_mflix
+voyage:
+  base-url: https://api.voyageai.com/v1
+  model: voyage-3-large
+  output-dimension: 2048
+  vector-index-name: vector_index
+  vector-field: plot_embedding_voyage_3_large
+  top-k: 10
+  num-candidates: 150
