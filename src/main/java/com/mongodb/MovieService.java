@@ -1,6 +1,6 @@
 package com.mongodb;
 
-
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.domain.Vector;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.VectorSearchOperation;
@@ -11,6 +11,7 @@ import java.util.List;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Service
+@EnableConfigurationProperties(VoyageConfigProperties.class)
 public class MovieService {
 
 	private static final int TOP_K = 10;
