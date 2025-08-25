@@ -31,8 +31,8 @@ public class MovieService {
 		List<Double> embedding = embedQuery(query);
 		Vector vector = Vector.of(embedding);
 
-		VectorSearchOperation search = VectorSearchOperation.search(config.getVectorIndexName())
-				.path(config.getVectorField())
+		VectorSearchOperation search = VectorSearchOperation.search(config.vectorIndexName())
+				.path(config.vectorField())
 				.vector(vector)
 				.limit(TOP_K)
 				.numCandidates(NUM_CANDIDATES)
@@ -45,7 +45,7 @@ public class MovieService {
 	private List<Double> embedQuery(
 			String text) {
 		var res = client.embed(new EmbeddingsRequest(
-				List.of(text), config.getModel(), "query", config.getOutputDimension()));
+				List.of(text), config.model(), "query", config.outputDimension()));
 		return res.data().getFirst().embedding();
 	}
 }
