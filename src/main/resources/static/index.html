@@ -5,15 +5,15 @@
     <title>Movie Search</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { padding-bottom: 4rem; }
-        .search-card { position: sticky; top: 0; z-index: 100; }
-    </style>
+    <link href="styles.css" rel="stylesheet">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
-    <div class="container">
+    <div class="container d-flex justify-content-between align-items-center">
         <a class="navbar-brand fw-semibold" href="#">🎬 Movie Search</a>
+        <span class="navbar-text small text-muted ms-auto">
+      Movie search powered by Spring technologies, Voyage AI, and MongoDB Vector Search.
+    </span>
     </div>
 </nav>
 
@@ -26,12 +26,144 @@
                     <div class="input-group w-100">
                         <input id="q" name="query" class="form-control" type="text"
                                placeholder="e.g., pyramids space travel" required />
-                        <button id="btn-search" class="btn btn-primary" type="submit">
-                            Search
-                        </button>
+                        <button id="btn-search" class="btn btn-primary" type="submit">Search</button>
                     </div>
-                    <div class="d-flex justify-content-end">
-                        <small id="status" class="text-muted mt-1"></small>
+
+                    <div class="mt-2 d-flex align-items-center justify-content-between">
+                        <a class="link-secondary small" data-bs-toggle="collapse" href="#filters"
+                           role="button" aria-expanded="false" aria-controls="filters">Advanced filters</a>
+                        <small id="status" class="text-muted"></small>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="collapse mt-3" id="filters">
+                        <div class="border rounded p-3 bg-body-tertiary">
+                            <div class="mb-3">
+                                <label class="form-label mb-2">Genres</label>
+                                <div class="d-flex flex-wrap gap-2">
+
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Sci-Fi">
+                                        <span class="form-check-label">Sci-Fi</span>
+                                    </label>
+
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Action">
+                                        <span class="form-check-label">Action</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Adventure">
+                                        <span class="form-check-label">Adventure</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Animation">
+                                        <span class="form-check-label">Animation</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Biography">
+                                        <span class="form-check-label">Biography</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Comedy">
+                                        <span class="form-check-label">Comedy</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Crime">
+                                        <span class="form-check-label">Crime</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Documentary">
+                                        <span class="form-check-label">Documentary</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Drama">
+                                        <span class="form-check-label">Drama</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Family">
+                                        <span class="form-check-label">Family</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Fantasy">
+                                        <span class="form-check-label">Fantasy</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Film-Noir">
+                                        <span class="form-check-label">Film-Noir</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="History">
+                                        <span class="form-check-label">History</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Horror">
+                                        <span class="form-check-label">Horror</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Music">
+                                        <span class="form-check-label">Music</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Musical">
+                                        <span class="form-check-label">Musical</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Mystery">
+                                        <span class="form-check-label">Mystery</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Romance">
+                                        <span class="form-check-label">Romance</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Short">
+                                        <span class="form-check-label">Short</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Sport">
+                                        <span class="form-check-label">Sport</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Thriller">
+                                        <span class="form-check-label">Thriller</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="War">
+                                        <span class="form-check-label">War</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input genre" type="checkbox" value="Western">
+                                        <span class="form-check-label">Western</span>
+                                    </label>
+                                </div>
+
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="excludeGenres">
+                                    <label class="form-check-label" for="excludeGenres">
+                                        Exclude selected genres
+                                    </label>
+                                </div>
+                            </div>
+
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label mb-1">Release year (from)</label>
+                                    <input type="number" min="1900" max="2100" step="1" id="yearFrom" class="form-control" placeholder="e.g. 2010">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mb-1">Release year (to)</label>
+                                    <input type="number" min="1900" max="2100" step="1" id="yearTo" class="form-control" placeholder="e.g. 2024">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label mb-1">Minimum IMDb rating</label>
+                                    <input type="number" min="0" max="10" step="0.1" id="minImdbRating" class="form-control" placeholder="e.g. 7.0">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -39,133 +171,12 @@
     </div>
 
     <div id="alerts"></div>
+    <div id="active-filters" class="mb-2"></div>
     <div id="results" class="row g-3"></div>
 </main>
 
-<footer class="container text-center text-muted">
-    <small>Movie search powered by Spring technologies, Voyage AI, and MongoDB Vector Search.</small>
-</footer>
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    const form = document.getElementById('search-form');
-    const input = document.getElementById('q');
-    const btn = document.getElementById('btn-search');
-    const results = document.getElementById('results');
-    const statusEl = document.getElementById('status');
-    const alerts = document.getElementById('alerts');
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const q = input.value.trim();
-        if (!q) return;
-
-        setBusy(true);
-        clearUI();
-
-        try {
-            const resp = await fetch('/movies?query=' + encodeURIComponent(q), {
-                headers: { 'Accept': 'application/json' }
-            });
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            const data = await resp.json();
-
-            if (!Array.isArray(data) || data.length === 0) {
-                showAlert('No results found.', 'warning');
-                return;
-            }
-
-            statusEl.textContent = `Found ${data.length} result${data.length > 1 ? 's' : ''}.`;
-            renderResults(data);
-        } catch (err) {
-            showAlert('Error fetching movies: ' + esc(err.message), 'danger');
-        } finally {
-            setBusy(false);
-        }
-    });
-
-    function renderResults(items) {
-        for (const m of items) {
-            const title = pick(m, ['title', 'name']) || '(untitled)';
-            const year = pick(m, ['year', 'releasedYear', 'releaseYear']);
-            const fullplot = pick(m, ['fullplot', 'fullPlot', 'plot']) || '';
-
-            const col = document.createElement('div');
-            col.className = 'col-12';
-
-            const card = document.createElement('div');
-            card.className = 'card shadow-sm';
-
-            const body = document.createElement('div');
-            body.className = 'card-body';
-
-            const header = document.createElement('div');
-            header.className = 'd-flex align-items-center gap-2 flex-wrap';
-
-            const h5 = document.createElement('h5');
-            h5.className = 'card-title mb-0';
-            h5.textContent = title;
-
-            header.appendChild(h5);
-
-            if (year) {
-                const badge = document.createElement('span');
-                badge.className = 'badge text-bg-secondary';
-                badge.textContent = year;
-                header.appendChild(badge);
-            }
-
-
-
-            const p = document.createElement('p');
-            p.className = 'card-text text-body-secondary mt-2 movie-plot';
-            p.textContent = fullplot;
-
-            body.appendChild(header);
-            body.appendChild(p);
-            card.appendChild(body);
-            col.appendChild(card);
-            results.appendChild(col);
-        }
-    }
-
-    function setBusy(isBusy) {
-        btn.disabled = isBusy;
-        input.disabled = isBusy;
-        statusEl.innerHTML = isBusy
-            ? '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Searching…'
-            : '';
-    }
-
-    function clearUI() {
-        alerts.innerHTML = '';
-        results.innerHTML = '';
-        statusEl.textContent = '';
-    }
-
-    function showAlert(msg, type = 'info') {
-        const div = document.createElement('div');
-        div.className = `alert alert-${type}`;
-        div.textContent = msg;
-        alerts.appendChild(div);
-    }
-
-    function esc(str) {
-        return String(str ?? '').replace(/[&<>"']/g, s => ({
-            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-        }[s]));
-    }
-
-    function pick(obj, keys) {
-        for (const k of keys) {
-            if (obj && obj[k] != null && String(obj[k]).trim() !== '') {
-                return obj[k];
-            }
-        }
-        return undefined;
-    }
-
-</script>
+<script src="script.js"></script>
 </body>
 </html>

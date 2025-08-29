@@ -2,10 +2,19 @@ package com.mongodb;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document("embedded_movies")
+
 public record Movie(
 	String id,
 	String title,
 	String year,
-	String fullplot)
-{}
+	String fullplot,
+	String plot,
+	String poster,
+	Imdb imdb,
+	List<String> genres)
+{
+	record Imdb(double rating) {}
+}

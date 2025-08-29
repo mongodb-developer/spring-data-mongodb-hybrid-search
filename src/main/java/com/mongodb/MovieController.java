@@ -1,9 +1,9 @@
 package com.mongodb;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,8 +18,8 @@ public class MovieController {
 		this.movieService = movieService;
 	}
 
-	@GetMapping
-	public ResponseEntity<List<Movie>> searchMovies(@RequestParam String query) {
-		return ResponseEntity.ok(movieService.searchMovies(query));
+	@PostMapping("/search")
+	public ResponseEntity<List<Movie>> searchMovies(@RequestBody MovieSearchRequest req) {
+		return ResponseEntity.ok(movieService.searchMovies(req));
 	}
 }
