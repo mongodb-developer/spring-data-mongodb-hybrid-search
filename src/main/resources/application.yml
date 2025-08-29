@@ -12,3 +12,9 @@ voyage:
   vector-field: plot_embedding_voyage_3_large
   top-k: 10
   num-candidates: 150
+logging:
+  level:
+    org.springframework.data:
+          mongodb: DEBUG
+
+
