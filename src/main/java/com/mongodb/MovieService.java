@@ -1,7 +1,6 @@
 package com.mongodb;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.data.domain.Vector;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.VectorSearchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -21,22 +20,19 @@ public class MovieService {
 	private static final int NUM_CANDIDATES = 40;
 
 	private final MongoTemplate mongoTemplate;
-	private final VoyageEmbeddingsClient client;
 	private final VoyageConfigProperties config;
+	private final EmbeddingService embeddingService;
 
- 	MovieService(MongoTemplate mongoTemplate, VoyageEmbeddingsClient client, VoyageConfigProperties config) {
+ 	MovieService(MongoTemplate mongoTemplate, VoyageConfigProperties config, EmbeddingService embeddingService) {
 		this.mongoTemplate = mongoTemplate;
-		this.client = client;
 		this.config = config;
+		this.embeddingService = embeddingService;
 	}
 
 	public List<Movie> searchMovies(MovieSearchRequest req) {
-		List<Double> embedding = embedQuery(req.query());
-		Vector vector = Vector.of(embedding);
-
 		VectorSearchOperation search = VectorSearchOperation.search(config.vectorIndexName())
 				.path(config.vectorField())
-				.vector(vector)
+				.vector(embeddingService.embedQuery(req.query()))
 				.limit(TOP_K)
 				.filter(buildCriteria(req))
 				.numCandidates(NUM_CANDIDATES)
@@ -44,13 +40,6 @@ public class MovieService {
 
 		return mongoTemplate.aggregate(newAggregation(Movie.class, search), Movie.class)
 				.getMappedResults();
-	}
-
-	private List<Double> embedQuery(
-			String text) {
-		var res = client.embed(new EmbeddingsRequest(
-				List.of(text), config.model(), "query", config.outputDimension()));
-		return res.data().getFirst().embedding();
 	}
 
 	private Criteria buildCriteria(final MovieSearchRequest req) {
@@ -81,7 +70,7 @@ public class MovieService {
 			}
 			Criteria y = Criteria.where("year");
 			if (from != null) y = y.gte(from);
-			if (to   != null) y = y.lte(to);
+			if (to != null) y = y.lte(to);
 			parts.add(y);
 		}
 
