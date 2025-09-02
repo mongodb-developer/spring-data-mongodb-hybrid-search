@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
 @Document("embedded_movies")
-
 public record Movie(
 	String id,
 	String title,
@@ -14,7 +13,8 @@ public record Movie(
 	String plot,
 	String poster,
 	Imdb imdb,
-	List<String> genres)
+	List<String> genres,
+	List<String> cast)
 {
-	record Imdb(double rating) {}
+	record Imdb(Double rating) {}
 }

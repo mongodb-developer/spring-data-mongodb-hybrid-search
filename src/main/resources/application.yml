@@ -10,8 +10,8 @@ voyage:
   output-dimension: 2048
   vector-index-name: vector_index
   vector-field: plot_embedding_voyage_3_large
-  top-k: 10
-  num-candidates: 150
+  top-k: 8
+  num-candidates: 160
 logging:
   level:
     org.springframework.data:

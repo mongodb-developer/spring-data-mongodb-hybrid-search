@@ -2,7 +2,6 @@ const form = document.getElementById('search-form');
 const input = document.getElementById('q');
 const btn = document.getElementById('btn-search');
 const results = document.getElementById('results');
-const statusEl = document.getElementById('status');
 const alerts = document.getElementById('alerts');
 const chips = document.getElementById('active-filters');
 
@@ -23,11 +22,11 @@ form.addEventListener('submit', async (e) => {
         const genres = [...document.querySelectorAll('.genre:checked')].map(x => x.value);
 
         const req = { query: q };
-        if (yearFromEl.value) req.yearFrom = Number(yearFromEl.value);
-        if (yearToEl.value) req.yearTo = Number(yearToEl.value);
+        if (yearFromEl?.value) req.yearFrom = Number(yearFromEl.value);
+        if (yearToEl?.value) req.yearTo = Number(yearToEl.value);
         if (genres.length) req.genres = genres;
-        if (minImdbEl.value) req.minImdbRating = Number(minImdbEl.value);
-        if (excludeGenres.checked) req.excludeGenres = true;
+        if (minImdbEl?.value) req.minImdbRating = Number(minImdbEl.value);
+        if (excludeGenres?.checked) req.excludeGenres = true;
 
         renderChips(req);
 
@@ -36,7 +35,7 @@ form.addEventListener('submit', async (e) => {
             headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify(req)
         });
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        if (!resp.ok) new Error('HTTP ' + resp.status);
 
         const data = await resp.json();
         if (!Array.isArray(data) || data.length === 0) {
@@ -44,35 +43,47 @@ form.addEventListener('submit', async (e) => {
             return;
         }
 
-        statusEl.textContent = `Found ${data.length} result${data.length > 1 ? 's' : ''}.`;
         renderResults(data);
-
     } catch (err) {
         showAlert('Error fetching movies: ' + String(err?.message || err), 'danger');
     } finally {
         setBusy(false);
     }
-
-
 });
 
 function renderChips(req) {
     const items = [];
+
+    items.push(['Search', `${req.query}`]);
     if (req.yearFrom != null || req.yearTo != null) items.push(['Year', `${req.yearFrom ?? ''}–${req.yearTo ?? ''}`]);
-    if (req.genres && req.genres.length) items.push(['Genres', req.genres.join(', ')]);
+
+    if (req.genres && req.genres.length) {
+        if (req.excludeGenres) {
+            items.push(['Excluding genres', req.genres.join(', ')]);
+        } else {
+            items.push(['Genres', req.genres.join(', ')]);
+        }
+    }
     if (req.minImdbRating != null) items.push(['IMDb ≥', req.minImdbRating]);
     chips.innerHTML = items.map(([k, v]) =>
         `<span class="badge rounded-pill text-bg-secondary filter-chip">${k}: ${v}</span>`).join('');
 }
 
+function movieFields(m) {
+    return {
+        title:  pick(m, ['title','name']) || '(untitled)',
+        year:   pick(m, ['year','releasedYear','releaseYear']),
+        plot:   pick(m, ['fullplot','fullPlot','plot']) || '',
+        rating: m?.imdb?.rating,
+        genres: Array.isArray(m?.genres) ? m.genres : [],
+        poster: m?.poster || 'https://i.ibb.co/hRGmNYDn/No-image-Available.png',
+    };
+}
+
 function renderResults(items) {
     for (const m of items) {
-        const title   = pick(m, ['title','name']) || '(untitled)';
-        const year    = pick(m, ['year','releasedYear','releaseYear']);
-        const plot    = pick(m, ['fullplot','fullPlot','plot']) || '';
-        const rating  = m?.imdb?.rating;
-        const genres  = Array.isArray(m?.genres) ? m.genres : [];
-        const poster  = m.poster || 'https://i.ibb.co/hRGmNYDn/No-image-Available.png';
+
+        const { title, year, plot, rating, genres, poster } = movieFields(m);
 
         const col = document.createElement('div');
         col.className = 'col-6 col-md-4 col-lg-3';
@@ -100,6 +111,7 @@ function renderResults(items) {
             const parts = [];
             if (year) parts.push(String(year));
             if (rating != null) {
+
                 parts.push(`★ ${Number(rating).toFixed(1)}`);
             }
             meta.textContent = parts.join(' • ');
@@ -131,33 +143,83 @@ function renderResults(items) {
             body.appendChild(p);
         }
 
+        const btnDetails = document.createElement('button');
+        btnDetails.type = 'button';
+        btnDetails.className = 'btn btn-sm btn-outline-primary mt-auto';
+        btnDetails.textContent = 'Details';
+        btnDetails.addEventListener('click', () => openDetails(m));
+        body.appendChild(btnDetails);
+
         card.appendChild(body);
         col.appendChild(card);
         results.appendChild(col);
     }
 }
 
-function formatVotes(v) {
-    const n = Number(v);
-    if (!Number.isFinite(n)) return v;
-    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
-    if (n >= 1_000)     return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
-    return String(n);
-}
+function openDetails(m) {
 
+    const { title, year, plot, rating, genres, poster } = movieFields(m);
+
+    const cast    = Array.isArray(m.cast) ? m.cast
+        : (Array.isArray(m.actors) ? m.actors : []);
+
+    const modalEl = document.getElementById('movieModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPoster = document.getElementById('modalPoster');
+    const modalMeta = document.getElementById('modalMeta');
+    const modalGenres = document.getElementById('modalGenres');
+    const modalCast = document.getElementById('modalCast');
+    const modalPlot = document.getElementById('modalPlot');
+    const modalExtra = document.getElementById('modalExtra');
+
+    modalTitle.textContent = title;
+    modalPoster.src = poster;
+    modalPoster.alt = title;
+
+    const parts = [];
+    if (year) parts.push(String(year));
+    if (rating != null) {
+        parts.push(`IMDb ${Number(rating).toFixed(1)}`);
+    }
+    modalMeta.textContent = parts.join(' • ');
+
+    modalGenres.innerHTML = '';
+    if (genres.length) {
+        genres.forEach(g => {
+            const chip = document.createElement('span');
+            chip.className = 'genre-chip';
+            chip.textContent = g;
+            modalGenres.appendChild(chip);
+        });
+    }
+
+    modalCast.innerHTML = '';
+    if (cast.length) {
+        const label = document.createElement('div');
+        label.className = 'movie-cast';
+        label.innerHTML = `<strong>Cast:</strong> ` +
+            cast.map(a => {
+                const q = encodeURIComponent(a);
+                return `<a href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener noreferrer">${esc(a)}</a>`;
+            }).join(', ');
+        modalCast.appendChild(label);
+    }
+
+    modalPlot.textContent = plot;
+    modalExtra.textContent = '';
+
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+}
 
 function setBusy(isBusy) {
     btn.disabled = isBusy;
     input.disabled = isBusy;
-    statusEl.innerHTML = isBusy
-        ? '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Searching…'
-        : '';
 }
 
 function clearUI() {
     alerts.innerHTML = '';
     results.innerHTML = '';
-    statusEl.textContent = '';
     chips.innerHTML = '';
 }
 
@@ -173,4 +235,10 @@ function pick(obj, keys) {
         if (obj && obj[k] != null && String(obj[k]).trim() !== '') return obj[k];
     }
     return undefined;
+}
+
+function esc(str) {
+    return String(str ?? '').replace(/[&<>"']/g, s => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[s]));
 }

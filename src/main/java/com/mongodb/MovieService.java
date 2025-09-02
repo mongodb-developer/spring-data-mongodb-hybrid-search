@@ -3,21 +3,15 @@ package com.mongodb;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.VectorSearchOperation;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Service
 @EnableConfigurationProperties(VoyageConfigProperties.class)
 public class MovieService {
-
-	private static final int TOP_K = 10;
-	private static final int NUM_CANDIDATES = 40;
 
 	private final MongoTemplate mongoTemplate;
 	private final VoyageConfigProperties config;
@@ -33,57 +27,12 @@ public class MovieService {
 		VectorSearchOperation search = VectorSearchOperation.search(config.vectorIndexName())
 				.path(config.vectorField())
 				.vector(embeddingService.embedQuery(req.query()))
-				.limit(TOP_K)
-				.filter(buildCriteria(req))
-				.numCandidates(NUM_CANDIDATES)
+				.limit(config.topK())
+				.filter(req.toCriteria())
+				.numCandidates(config.numCandidates())
 				.withSearchScore("score");
 
 		return mongoTemplate.aggregate(newAggregation(Movie.class, search), Movie.class)
 				.getMappedResults();
 	}
-
-	private Criteria buildCriteria(final MovieSearchRequest req) {
-		final List<Criteria> parts = new ArrayList<>(3);
-
-		final List<String> genres = req.genres();
-
-		if (genres != null) {
-			final List<String> cleaned = genres.stream()
-					.filter(Objects::nonNull)
-					.map(String::trim)
-					.filter(s -> !s.isEmpty())
-					.distinct()
-					.toList();
-
-			if (!cleaned.isEmpty()) {
-				parts.add(req.excludeGenres()
-						? Criteria.where("genres").nin(cleaned)
-						: Criteria.where("genres").in(cleaned));
-			}
-		}
-
-		Integer from = req.yearFrom();
-		Integer to   = req.yearTo();
-		if (from != null || to != null) {
-			if (from != null && to != null && from > to) {
-				final int tmp = from; from = to; to = tmp; // swap
-			}
-			Criteria y = Criteria.where("year");
-			if (from != null) y = y.gte(from);
-			if (to != null) y = y.lte(to);
-			parts.add(y);
-		}
-
-		if (req.minImdbRating() != null) {
-			parts.add(Criteria.where("imdb.rating").gte(req.minImdbRating()));
-		}
-
-		return switch (parts.size()) {
-			case 0 -> new Criteria();
-			case 1 -> parts.getFirst();
-			default -> new Criteria().andOperator(parts.toArray(new Criteria[0]));
-		};
-	}
-
-
 }
