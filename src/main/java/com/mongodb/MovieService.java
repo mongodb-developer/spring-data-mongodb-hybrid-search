@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.mongodb.client.model.search.FuzzySearchOptions.*;
 import static com.mongodb.client.model.search.SearchOperator.*;
 import static com.mongodb.client.model.search.SearchScore.*;
 
@@ -38,10 +39,13 @@ public class MovieService {
 				compound().should(
 						List.of(
 								text(SearchPath.fieldPath("title"), query)
+										.fuzzy(fuzzySearchOptions().maxEdits(1))
 										.score(boost(4.0F)),
 								text(SearchPath.fieldPath("plot"), query)
+										.fuzzy(fuzzySearchOptions().maxEdits(1))
 										.score(boost(3.0F)),
 								text(SearchPath.fieldPath("fullplot"), query)
+										.fuzzy(fuzzySearchOptions().maxEdits(1))
 										.score(boost(2.0F))
 						)
 				),
