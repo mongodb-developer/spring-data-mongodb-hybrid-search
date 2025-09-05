@@ -42,7 +42,7 @@ http://localhost:8080/
 ```
 Use the search bar to find movies (renders title, year, and full plot).
 
-<img src="docs/img/index.png" alt="Encrypted Document in Compass" width="500"/> 
+<img src="docs/img/webApp.png" alt="Encrypted Document in Compass" width="500"/> 
 
 
 

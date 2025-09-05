@@ -13,7 +13,7 @@ public record MovieSearchRequest(
 		Integer yearFrom,
 		Integer yearTo,
 		List<String> genres,
-		Double minImdbRating,
+		Double minIMDbRating,
 		boolean excludeGenres
 ) {
 
@@ -35,8 +35,8 @@ public record MovieSearchRequest(
 			parts.add(y);
 		}
 
-		if (minImdbRating != null) {
-			parts.add(Criteria.where("imdb.rating").gte(minImdbRating));
+		if (minIMDbRating != null) {
+			parts.add(Criteria.where("imdb.rating").gte(minIMDbRating));
 		}
 
 		if (parts.isEmpty()) return new Criteria();

@@ -23,7 +23,7 @@ public class EmbeddingService {
 	public List<Double> embedQuery(
 			String text) {
 
-		logger.info("generating embeddings .. ");
+		logger.info("Generating embeddings .. ");
 
 		var res = client.embed(new EmbeddingsRequest(
 				List.of(text), config.model(), "query", config.outputDimension()));

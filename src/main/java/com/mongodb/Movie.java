@@ -6,7 +6,6 @@ import java.util.List;
 
 @Document("embedded_movies")
 public record Movie(
-	String id,
 	String title,
 	String year,
 	String fullplot,
