@@ -7,7 +7,7 @@ const chips = document.getElementById('active-filters');
 
 const yearFromEl = document.getElementById('yearFrom');
 const yearToEl = document.getElementById('yearTo');
-const minImdbEl = document.getElementById('minImdbRating');
+const minImdbEl = document.getElementById('minIMDbRating');
 const excludeGenres = document.getElementById('excludeGenres');
 
 form.addEventListener('submit', async (e) => {
@@ -25,7 +25,7 @@ form.addEventListener('submit', async (e) => {
         if (yearFromEl?.value) req.yearFrom = Number(yearFromEl.value);
         if (yearToEl?.value) req.yearTo = Number(yearToEl.value);
         if (genres.length) req.genres = genres;
-        if (minImdbEl?.value) req.minImdbRating = Number(minImdbEl.value);
+        if (minImdbEl?.value) req.minIMDbRating = Number(minImdbEl.value);
         if (excludeGenres?.checked) req.excludeGenres = true;
 
         renderChips(req);
@@ -64,7 +64,7 @@ function renderChips(req) {
             items.push(['Genres', req.genres.join(', ')]);
         }
     }
-    if (req.minImdbRating != null) items.push(['IMDb ≥', req.minImdbRating]);
+    if (req.minIMDbRating != null) items.push(['IMDb ≥', req.minIMDbRating]);
     chips.innerHTML = items.map(([k, v]) =>
         `<span class="badge rounded-pill text-bg-secondary filter-chip">${k}: ${v}</span>`).join('');
 }
