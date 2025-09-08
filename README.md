@@ -44,7 +44,21 @@ mvn spring-boot:run
 #### 3.1 Use the API (endpoint):
 
 ```
-GET localhost:8080/movies?query=Find movies featuring pyramids and space travel
+
+POST http://localhost:8080/movies/search
+Content-Type: application/json
+
+{
+  "query": "a ship that sinks at night after hitting an iceberg",
+  "minIMDbRating": 5,
+  "yearFrom": 1980,
+  "yearTo": 2003,
+  "genres": [
+    "Drama", "Action"
+  ],
+  "excludeGenres": false
+}
+
 ```
 
 #### Or Open the app
@@ -53,7 +67,7 @@ http://localhost:8080/
 ```
 Use the search bar to find movies (renders title, year, and full plot).
 
-<img src="docs/img/webApp.png" alt="The Movie Search web application" width="500"/> 
+<img src="docs/img/webAppDetails.png" alt="The Movie Search web application"/> 
 
 
 
