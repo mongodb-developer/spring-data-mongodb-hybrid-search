@@ -27,12 +27,12 @@ It also includes a minimal Bootstrap-based UI served by Spring (/static/index.ht
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/mongodb-developer/spring-data-mongodb-vector-search.git
+git clone https://github.com/mongodb-developer/spring-data-mongodb-hybrid-search.git
 ```
 
 ### 2. Set the environments variables
 ```
-cd spring-data-mongodb-vector-search
+cd spring-data-mongodb-hybrid-search
 export MONGODB_URI="<YOUR_CONNECTION_STRING>" VOYAGE_API_KEY="<API_KEY>"
 ```
 
