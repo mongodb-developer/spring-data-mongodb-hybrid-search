@@ -109,7 +109,7 @@ public class MovieService {
 
 		Aggregation aggregation = Aggregation.newAggregation(rankFusion);
 
-		return mongoTemplate.aggregate(aggregation, "embedded_movies", Movie.class).getMappedResults();
+		return mongoTemplate.aggregate(aggregation, config.vectorCollectionName(), Movie.class).getMappedResults();
 	}
 
 

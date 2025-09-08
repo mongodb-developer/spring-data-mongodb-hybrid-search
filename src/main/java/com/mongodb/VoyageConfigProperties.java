@@ -7,6 +7,7 @@ public record VoyageConfigProperties(
      String model,
      int outputDimension,
      String vectorIndexName,
+	 String vectorCollectionName,
      String vectorField,
      int topK,
      int numCandidates,
