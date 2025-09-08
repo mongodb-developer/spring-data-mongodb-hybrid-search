@@ -1,4 +1,5 @@
 # spring-data-mongodb-hybrid-search
+
 This project is part of the “Beyond Keywords” article series, 
 where we explore how to go beyond simple keyword search and build smarter applications with MongoDB and Spring.
 
@@ -12,6 +13,8 @@ The project demonstrates:
 - Hybrid Search that merges vector similarity and keyword matching.
 
 It also includes a minimal Bootstrap-based UI served by Spring (/static/index.html) and a REST endpoint.
+
+<img src="docs/img/webApp.png" alt="The Movie Search web application" width="500"/>
 
 ## Built With
 
@@ -50,7 +53,7 @@ http://localhost:8080/
 ```
 Use the search bar to find movies (renders title, year, and full plot).
 
-<img src="docs/img/webApp.png" alt="Encrypted Document in Compass" width="500"/> 
+<img src="docs/img/webApp.png" alt="The Movie Search web application" width="500"/> 
 
 
 
