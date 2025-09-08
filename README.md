@@ -14,7 +14,7 @@ The project demonstrates:
 
 It also includes a minimal Bootstrap-based UI served by Spring (/static/index.html) and a REST endpoint.
 
-<img src="docs/img/webApp.png" alt="The Movie Search web application" width="500"/>
+<img src="docs/img/webApp.png" alt="The Movie Search web application" />
 
 ## Built With
 
