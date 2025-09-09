@@ -27,7 +27,6 @@ import static com.mongodb.client.model.search.SearchScore.*;
 @EnableConfigurationProperties(VoyageConfigProperties.class)
 public class MovieService {
 
-
 	private final MongoTemplate mongoTemplate;
 	private final VoyageConfigProperties config;
 	private final EmbeddingService embeddingService;
@@ -38,23 +37,46 @@ public class MovieService {
 		this.embeddingService = embeddingService;
 	}
 
+	public List<Movie> searchMovies(MovieSearchRequest req) {
+		AggregationOperation rankFusion = context -> new Document("$rankFusion",
+				new Document("input",
+						new Document("pipelines",
+								new Document("searchPipeline", List.of(buildFullTextSearchPipeline(req), new Document("$limit", config.topK())))
+										.append("vectorPipeline", List.of(buildVectorSearchPipeline(req)))))
+						.append("combination",
+								new Document("weights",
+										new Document("searchPipeline", 0.)
+												.append("vectorPipeline", 0.8)))
+						.append("scoreDetails", false));
+
+		Aggregation aggregation = Aggregation.newAggregation(rankFusion);
+
+		return mongoTemplate.aggregate(aggregation, config.vectorCollectionName(), Movie.class).getMappedResults();
+	}
+
 	private BsonDocument buildFullTextSearchPipeline(MovieSearchRequest req) {
 		var filters = buildFilters(req);
 		var searchClauses = buildSearchClauses(req);
-
+		var mustNot = buildMustNot(req);
 		var compound = compound();
-		compound = !filters.isEmpty() ? compound.filter(filters) : compound;
+
+		if (!filters.isEmpty()) {
+			compound = compound.filter(filters);
+		}
+		if (!mustNot.isEmpty()) {
+			compound = compound.mustNot(mustNot);
+		}
 
 		return Aggregates.search(
 				compound.should(searchClauses),
- 				SearchOptions.searchOptions().index("fulltextsearch")
+				SearchOptions.searchOptions().index("fulltextsearch")
 		).toBsonDocument();
 	}
 
 	private List<SearchOperator> buildFilters(MovieSearchRequest req) {
 		var filters = new ArrayList<SearchOperator>();
 
- 		if (req.genres() != null && !req.genres().isEmpty()) {
+		if (req.genres() != null && !req.genres().isEmpty() && !req.excludeGenres()) {
 			filters.add(in(SearchPath.fieldPath("genres"), req.genres()));
 		}
 
@@ -87,6 +109,15 @@ public class MovieService {
 				.collect(Collectors.toList());
 	}
 
+	private List<SearchOperator> buildMustNot(MovieSearchRequest req) {
+		var mustNot = new ArrayList<SearchOperator>();
+
+		if (req.genres() != null && !req.genres().isEmpty() && req.excludeGenres()) {
+			mustNot.add(in(SearchPath.fieldPath("genres"), req.genres()));
+		}
+		return mustNot;
+	}
+
 	private Bson buildVectorSearchPipeline(MovieSearchRequest req) {
 		return VectorSearchOperation.search(config.vectorIndexName())
 				.path(config.vectorField())
@@ -95,24 +126,4 @@ public class MovieService {
 				.filter(req.toCriteria())
 				.numCandidates(config.numCandidates()).toDocument(Aggregation.DEFAULT_CONTEXT);
 	}
-
-	public List<Movie> searchMovies(MovieSearchRequest req) {
-
-		AggregationOperation rankFusion = context -> new Document("$rankFusion",
-				new Document("input",
-						new Document("pipelines",
-								new Document("searchPipeline", List.of(buildFullTextSearchPipeline(req), new Document("$limit", config.topK())))
-										.append("vectorPipeline", List.of(buildVectorSearchPipeline(req)))))
-						.append("combination",
-								new Document("weights",
-										new Document("searchPipeline", 0.)
-												.append("vectorPipeline", 0.8)))
-						.append("scoreDetails", false));
-
-		Aggregation aggregation = Aggregation.newAggregation(rankFusion);
-
-		return mongoTemplate.aggregate(aggregation, config.vectorCollectionName(), Movie.class).getMappedResults();
-	}
-
-
 }
