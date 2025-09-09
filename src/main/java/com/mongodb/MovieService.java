@@ -39,21 +39,22 @@ public class MovieService {
 	}
 
 	private BsonDocument createFullTextSearchPipeline(MovieSearchRequest req) {
+		var filters = buildFilters(req);
+		var searchClauses = buildSearchClauses(req);
+
+		var compound = compound();
+		compound = !filters.isEmpty() ? compound.filter(filters) : compound;
+
 		return Aggregates.search(
-				compound().filter(buildFilters(req)).should(buildSearchClauses(req)),
-				SearchOptions.searchOptions().index("fulltextsearch")
+				compound.should(searchClauses),
+ 				SearchOptions.searchOptions().index("fulltextsearch")
 		).toBsonDocument();
 	}
 
 	private List<SearchOperator> buildFilters(MovieSearchRequest req) {
 		var filters = new ArrayList<SearchOperator>();
 
-		filters.add(
-				text(SearchPath.fieldPath("title"), req.query())
-						.score(boost(4.0F))
-						.fuzzy(fuzzySearchOptions().maxEdits(1)));
-
-		if (req.genres() != null && !req.genres().isEmpty()) {
+ 		if (req.genres() != null && !req.genres().isEmpty()) {
 			filters.add(in(SearchPath.fieldPath("genres"), req.genres()));
 		}
 
@@ -74,6 +75,7 @@ public class MovieService {
 
 	private List<SearchOperator> buildSearchClauses(MovieSearchRequest req) {
 		Map<String, Float> fieldConfigs = Map.of(
+				"title", 4.0F,
 				"plot", 3.0F,
 				"fullplot", 2.0F
 		);
@@ -103,8 +105,8 @@ public class MovieService {
 										.append("vectorPipeline", List.of(createVectorSearchPipeline(req)))))
 						.append("combination",
 								new Document("weights",
-										new Document("searchPipeline", 0.2)
-												.append("vectorPipeline", 0.8)))
+										new Document("searchPipeline", 0.5)
+												.append("vectorPipeline", 0.5)))
 						.append("scoreDetails", false));
 
 		Aggregation aggregation = Aggregation.newAggregation(rankFusion);
