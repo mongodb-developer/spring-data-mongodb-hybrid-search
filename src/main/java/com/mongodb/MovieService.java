@@ -38,7 +38,7 @@ public class MovieService {
 		this.embeddingService = embeddingService;
 	}
 
-	private BsonDocument createFullTextSearchPipeline(MovieSearchRequest req) {
+	private BsonDocument buildFullTextSearchPipeline(MovieSearchRequest req) {
 		var filters = buildFilters(req);
 		var searchClauses = buildSearchClauses(req);
 
@@ -87,7 +87,7 @@ public class MovieService {
 				.collect(Collectors.toList());
 	}
 
-	private Bson createVectorSearchPipeline(MovieSearchRequest req) {
+	private Bson buildVectorSearchPipeline(MovieSearchRequest req) {
 		return VectorSearchOperation.search(config.vectorIndexName())
 				.path(config.vectorField())
 				.vector(embeddingService.embedQuery(req.query()))
@@ -101,12 +101,12 @@ public class MovieService {
 		AggregationOperation rankFusion = context -> new Document("$rankFusion",
 				new Document("input",
 						new Document("pipelines",
-								new Document("searchPipeline", List.of(createFullTextSearchPipeline(req), new Document("$limit", config.topK())))
-										.append("vectorPipeline", List.of(createVectorSearchPipeline(req)))))
+								new Document("searchPipeline", List.of(buildFullTextSearchPipeline(req), new Document("$limit", config.topK())))
+										.append("vectorPipeline", List.of(buildVectorSearchPipeline(req)))))
 						.append("combination",
 								new Document("weights",
-										new Document("searchPipeline", 0.5)
-												.append("vectorPipeline", 0.5)))
+										new Document("searchPipeline", 0.)
+												.append("vectorPipeline", 0.8)))
 						.append("scoreDetails", false));
 
 		Aggregation aggregation = Aggregation.newAggregation(rankFusion);
