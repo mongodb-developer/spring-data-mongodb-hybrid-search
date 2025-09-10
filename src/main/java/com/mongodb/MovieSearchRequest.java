@@ -1,10 +1,9 @@
 package com.mongodb;
 
-import java.util.List;
-
 import org.springframework.data.mongodb.core.query.Criteria;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
