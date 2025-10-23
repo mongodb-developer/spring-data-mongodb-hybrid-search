@@ -1,6 +1,11 @@
 # spring-data-mongodb-hybrid-search
 
-This project is part of the “Beyond Keywords” article series, 
+This project is part of the “Beyond Keywords” article series:
+
+- [Beyond Keywords: Implementing Semantic Search in Java With Spring Data (Part 1)](https://dev.to/mongodb/beyond-keywords-implementing-semantic-search-in-java-with-spring-data-part-1-3m68)
+- [Beyond Keywords: Optimizing Vector Search With Filters and Caching (Part 2)](https://dev.to/mongodb/beyond-keywords-optimizing-vector-search-with-filters-and-caching-part-2-4e50)
+- [Beyond Keywords: Hybrid Search With Atlas and Vector Search (Part 3)](https://dev.to/mongodb/beyond-keywords-hybrid-search-with-atlas-and-vector-search-part-3-5fp3)
+
 where we explore how to go beyond simple keyword search and build smarter applications with MongoDB and Spring.
 
 It started with semantic search using vector search and Voyage AI embeddings, then evolved to include pre-filters for more precise results, caching strategies to save on embedding generation, and finally Hybrid Search — combining Atlas Search (full-text) with vector search through $rankFusion.
